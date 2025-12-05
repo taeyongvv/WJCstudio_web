@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "유튜브 인급동 동영상을 보여주는 웹페이지",
   "private": true,
-  "homepage": "https://[YOUR_USERNAME].github.io/youtube_famousWeb",
+  "homepage": "https://taeyongvv.github.io/WJCstudio_web",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
