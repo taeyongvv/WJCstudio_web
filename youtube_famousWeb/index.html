@@ -6,7 +6,7 @@
     <meta name="description" content="유튜브 인급동 동영상을 실시간으로 확인하세요">
     <title>유튜브 인급동</title>
     <script>
-        // GitHub Pages 경로 자동 감지 및 base 태그 설정
+        // GitHub Pages 경로 자동 감지 및 리소스 동적 로드
         (function() {
             const path = window.location.pathname;
             const parts = path.split('/').filter(Boolean);
@@ -14,17 +14,13 @@
             const repoName = parts.length > 0 && parts[0] !== 'index.html' ? parts[0] : '';
             const basePath = repoName ? '/' + repoName + '/' : '/';
             
-            // base 태그 생성 및 head 맨 앞에 삽입
-            const base = document.createElement('base');
-            base.href = basePath;
-            if (document.head.firstChild) {
-                document.head.insertBefore(base, document.head.firstChild);
-            } else {
-                document.head.appendChild(base);
-            }
+            // CSS 동적 로드
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = basePath + 'styles.css';
+            document.head.appendChild(link);
         })();
     </script>
-    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="header">
@@ -55,7 +51,19 @@
         <div id="videoList" class="video-list"></div>
     </main>
 
-    <script src="app.js"></script>
+    <script>
+        // GitHub Pages 경로 자동 감지 및 JavaScript 동적 로드
+        (function() {
+            const path = window.location.pathname;
+            const parts = path.split('/').filter(Boolean);
+            const repoName = parts.length > 0 && parts[0] !== 'index.html' ? parts[0] : '';
+            const basePath = repoName ? '/' + repoName + '/' : '/';
+            
+            const script = document.createElement('script');
+            script.src = basePath + 'app.js';
+            document.body.appendChild(script);
+        })();
+    </script>
 </body>
 </html>
 
