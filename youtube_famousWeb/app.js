@@ -51,11 +51,15 @@ async function fetchTrendingVideos() {
             `${YOUTUBE_API_URL}?part=snippet,statistics&chart=mostPopular&regionCode=KR&maxResults=20&key=${YOUTUBE_API_KEY}`
         );
 
-        if (!response.ok) {
-            throw new Error(`API 오류: ${response.status}`);
-        }
-
         const data = await response.json();
+
+        if (!response.ok) {
+            // [MY_LOG] 상세 에러 정보 로깅
+            console.error('[MY_LOG] API 오류 상세:', data);
+            const errorMessage = data.error?.message || `API 오류: ${response.status}`;
+            const errorReason = data.error?.errors?.[0]?.reason || '';
+            throw new Error(`${errorMessage}${errorReason ? ' (원인: ' + errorReason + ')' : ''}`);
+        }
         
         // [MY_LOG] API 응답 확인
         console.log('[MY_LOG] API 응답 받음:', data.items?.length || 0, '개 동영상');
