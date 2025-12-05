@@ -5,7 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="유튜브 인급동 동영상을 실시간으로 확인하세요">
     <title>유튜브 인급동</title>
-    <link rel="stylesheet" href="./styles.css">
+    <script>
+        // GitHub Pages 경로 자동 감지 및 base 태그 설정
+        (function() {
+            const path = window.location.pathname;
+            const parts = path.split('/').filter(Boolean);
+            // 저장소 이름 감지 (index.html이 아닌 첫 번째 경로)
+            const repoName = parts.length > 0 && parts[0] !== 'index.html' ? parts[0] : '';
+            const basePath = repoName ? '/' + repoName + '/' : '/';
+            
+            // base 태그 생성 및 head 맨 앞에 삽입
+            const base = document.createElement('base');
+            base.href = basePath;
+            if (document.head.firstChild) {
+                document.head.insertBefore(base, document.head.firstChild);
+            } else {
+                document.head.appendChild(base);
+            }
+        })();
+    </script>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header class="header">
@@ -36,7 +55,7 @@
         <div id="videoList" class="video-list"></div>
     </main>
 
-    <script src="./app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
 
