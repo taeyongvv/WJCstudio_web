@@ -4,14 +4,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="유튜브 인급동 동영상을 실시간으로 확인하세요">
-    <title>유튜브 인급동</title>
-    <base href="/WJCstudio_web/">
-    <link rel="stylesheet" href="styles.css">
+    <title>유튜브 인급동 - 와장창 스튜디오</title>
+    <script>
+        // GitHub Pages 경로 설정 및 리소스 동적 로드
+        (function() {
+            const isFileProtocol = window.location.protocol === 'file:';
+            const basePath = isFileProtocol ? '' : '/WJCstudio_web/';
+            
+            // base 태그 생성 (GitHub Pages용)
+            if (!isFileProtocol) {
+                const base = document.createElement('base');
+                base.href = basePath;
+                if (document.head.firstChild) {
+                    document.head.insertBefore(base, document.head.firstChild);
+                } else {
+                    document.head.appendChild(base);
+                }
+            }
+            
+            // CSS 동적 로드
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = basePath + 'styles.css';
+            document.head.appendChild(link);
+        })();
+    </script>
 </head>
 <body>
     <header class="header">
         <div class="header-content">
-            <h1 class="header-title">유튜브 인급동</h1>
+            <h1 class="header-title">유튜브 인급동 - 와장창 스튜디오</h1>
             <div class="header-info">
                 <span class="update-info" id="updateInfo">마지막 업데이트: 아직 업데이트되지 않음</span>
                 <button class="refresh-button" id="refreshButton" onclick="fetchTrendingVideos()">
@@ -37,7 +59,17 @@
         <div id="videoList" class="video-list"></div>
     </main>
 
-    <script src="app.js"></script>
+    <script>
+        // JavaScript 동적 로드
+        (function() {
+            const isFileProtocol = window.location.protocol === 'file:';
+            const basePath = isFileProtocol ? '' : '/WJCstudio_web/';
+            
+            const script = document.createElement('script');
+            script.src = basePath + 'app.js';
+            document.body.appendChild(script);
+        })();
+    </script>
 </body>
 </html>
 

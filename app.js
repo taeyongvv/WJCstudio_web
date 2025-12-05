@@ -5,6 +5,7 @@ const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/videos';
 // 전역 변수
 let lastUpdate = null;
 let autoRefreshInterval = null;
+const AUTO_REFRESH_KEY = 'youtube_trending_auto_refreshed';
 
 // 페이지 로드 시 초기화
 document.addEventListener('DOMContentLoaded', function() {
@@ -74,6 +75,22 @@ async function fetchTrendingVideos() {
     } catch (err) {
         // [MY_LOG] 에러 발생
         console.error('[MY_LOG] 에러 발생:', err);
+        
+        // 첫 접속 시 자동 새로고침 (한 번만)
+        const hasAutoRefreshed = sessionStorage.getItem(AUTO_REFRESH_KEY);
+        if (!hasAutoRefreshed) {
+            // [MY_LOG] 첫 접속 실패 - 자동 새로고침 시도
+            console.log('[MY_LOG] 첫 접속 실패 - 자동 새로고침 시도');
+            sessionStorage.setItem(AUTO_REFRESH_KEY, 'true');
+            
+            // 1초 후 자동 새로고침
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+            return; // 새로고침되므로 에러 메시지 표시 안 함
+        }
+        
+        // 이미 새로고침했거나 두 번째 실패 시 에러 메시지 표시
         errorText.textContent = `동영상을 불러오는 중 오류가 발생했습니다: ${err.message}`;
         errorMessage.style.display = 'block';
     } finally {
