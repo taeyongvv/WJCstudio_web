@@ -47,6 +47,40 @@
     </header>
 
     <main class="main-content">
+        <!-- 카테고리 선택 탭 -->
+        <div class="category-tabs">
+            <button class="category-tab active" data-category="" onclick="selectCategory('')">
+                전체
+            </button>
+            <button class="category-tab" data-category="10" onclick="selectCategory('10')">
+                음악
+            </button>
+            <button class="category-tab" data-category="20" onclick="selectCategory('20')">
+                게임
+            </button>
+            <button class="category-tab" data-category="17" onclick="selectCategory('17')">
+                스포츠
+            </button>
+            <button class="category-tab" data-category="24" onclick="selectCategory('24')">
+                엔터테인먼트
+            </button>
+            <button class="category-tab" data-category="25" onclick="selectCategory('25')">
+                뉴스
+            </button>
+            <button class="category-tab" data-category="27" onclick="selectCategory('27')">
+                교육
+            </button>
+            <button class="category-tab" data-category="28" onclick="selectCategory('28')">
+                과학기술
+            </button>
+            <button class="category-tab" data-category="23" onclick="selectCategory('23')">
+                코미디
+            </button>
+            <button class="category-tab" data-category="1" onclick="selectCategory('1')">
+                영화
+            </button>
+        </div>
+
         <div id="errorMessage" class="error-message" style="display: none;">
             <p id="errorText"></p>
             <button onclick="fetchTrendingVideos()" class="retry-button">다시 시도</button>

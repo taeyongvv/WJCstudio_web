@@ -6,6 +6,7 @@ const YOUTUBE_API_URL = 'https://www.googleapis.com/youtube/v3/videos';
 let lastUpdate = null;
 let autoRefreshInterval = null;
 const AUTO_REFRESH_KEY = 'youtube_trending_auto_refreshed';
+let currentCategory = ''; // 현재 선택된 카테고리
 
 // 페이지 로드 시 초기화 (동적 로드 대응)
 (function() {
@@ -72,9 +73,17 @@ async function fetchTrendingVideos() {
         console.log('[MY_LOG] YouTube 인급동 동영상 조회 시작');
         
         // YouTube Data API v3를 사용하여 한국 인급동 동영상 가져오기
-        const response = await fetch(
-            `${YOUTUBE_API_URL}?part=snippet,statistics&chart=mostPopular&regionCode=KR&maxResults=20&key=${YOUTUBE_API_KEY}`
-        );
+        let apiUrl = `${YOUTUBE_API_URL}?part=snippet,statistics&chart=mostPopular&regionCode=KR&maxResults=20&key=${YOUTUBE_API_KEY}`;
+        
+        // 카테고리가 선택된 경우 videoCategoryId 추가
+        if (currentCategory) {
+            apiUrl += `&videoCategoryId=${currentCategory}`;
+        }
+        
+        // [MY_LOG] API URL 확인
+        console.log('[MY_LOG] API 호출 URL:', apiUrl);
+        
+        const response = await fetch(apiUrl);
 
         const data = await response.json();
 
@@ -323,4 +332,26 @@ function updateLastUpdateInfo() {
 
 // 주기적으로 업데이트 정보 갱신 (1분마다)
 setInterval(updateLastUpdateInfo, 60000);
+
+// 카테고리 선택 함수
+function selectCategory(categoryId) {
+    // [MY_LOG] 카테고리 선택
+    console.log('[MY_LOG] 카테고리 선택:', categoryId || '전체');
+    
+    // 현재 카테고리 업데이트
+    currentCategory = categoryId;
+    
+    // 탭 활성화 상태 업데이트
+    const tabs = document.querySelectorAll('.category-tab');
+    tabs.forEach(tab => {
+        if (tab.dataset.category === categoryId) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+    
+    // 선택된 카테고리의 동영상 불러오기
+    fetchTrendingVideos();
+}
 
