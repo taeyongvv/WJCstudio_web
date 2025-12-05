@@ -7,18 +7,32 @@ let lastUpdate = null;
 let autoRefreshInterval = null;
 const AUTO_REFRESH_KEY = 'youtube_trending_auto_refreshed';
 
-// 페이지 로드 시 초기화
-document.addEventListener('DOMContentLoaded', function() {
-    // 초기 동영상 로드
-    fetchTrendingVideos();
-    
-    // 1시간마다 자동 갱신 설정 (3600000ms = 1시간)
-    autoRefreshInterval = setInterval(() => {
-        // [MY_LOG] 자동 갱신 실행
-        console.log('[MY_LOG] 1시간 경과 - 자동 갱신 시작');
+// 페이지 로드 시 초기화 (동적 로드 대응)
+(function() {
+    function initApp() {
+        // [MY_LOG] 앱 초기화
+        console.log('[MY_LOG] app.js 초기화 시작');
+        
+        // 초기 동영상 로드
         fetchTrendingVideos();
-    }, 3600000);
-});
+        
+        // 1시간마다 자동 갱신 설정 (3600000ms = 1시간)
+        autoRefreshInterval = setInterval(() => {
+            // [MY_LOG] 자동 갱신 실행
+            console.log('[MY_LOG] 1시간 경과 - 자동 갱신 시작');
+            fetchTrendingVideos();
+        }, 3600000);
+    }
+    
+    // DOM이 이미 준비되었거나 준비 중인지 확인
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+        // DOM이 이미 준비됨 - 즉시 초기화
+        // 약간의 지연을 두어 DOM 요소들이 확실히 준비되도록 함
+        setTimeout(initApp, 50);
+    }
+})();
 
 // YouTube 인급동 동영상 가져오기
 async function fetchTrendingVideos() {
@@ -33,6 +47,16 @@ async function fetchTrendingVideos() {
         errorText.textContent = 'YouTube API 키가 설정되지 않았습니다.';
         errorMessage.style.display = 'block';
         loadingMessage.style.display = 'none';
+        return;
+    }
+
+    // file:// 프로토콜에서 API 호출 차단 안내
+    if (window.location.protocol === 'file:') {
+        errorText.textContent = '로컬 파일에서는 YouTube API를 사용할 수 없습니다. 로컬 서버를 사용해주세요. (python -m http.server 8000)';
+        errorMessage.style.display = 'block';
+        loadingMessage.style.display = 'none';
+        refreshButton.disabled = false;
+        refreshButton.textContent = '새로고침';
         return;
     }
 

@@ -67,6 +67,25 @@
             
             const script = document.createElement('script');
             script.src = basePath + 'app.js';
+            
+            // 스크립트 로드 완료 후 초기화 실행
+            script.onload = function() {
+                // [MY_LOG] 스크립트 로드 완료
+                console.log('[MY_LOG] app.js 로드 완료');
+                
+                // app.js의 초기화 함수가 실행되도록 약간의 지연 후 확인
+                setTimeout(() => {
+                    if (typeof fetchTrendingVideos === 'function') {
+                        // 이미 초기화되지 않았다면 수동으로 호출
+                        const videoList = document.getElementById('videoList');
+                        if (!videoList || videoList.children.length === 0) {
+                            console.log('[MY_LOG] 수동으로 초기화 실행');
+                            fetchTrendingVideos();
+                        }
+                    }
+                }, 100);
+            };
+            
             document.body.appendChild(script);
         })();
     </script>
