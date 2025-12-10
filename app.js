@@ -73,12 +73,16 @@ async function fetchTrendingVideos() {
         console.log('[MY_LOG] YouTube 인급동 동영상 조회 시작');
         
         // YouTube Data API v3를 사용하여 한국 인급동 동영상 가져오기
-        let apiUrl = `${YOUTUBE_API_URL}?part=snippet,statistics&chart=mostPopular&regionCode=KR&maxResults=20&key=${YOUTUBE_API_KEY}`;
+        let apiUrl = `${YOUTUBE_API_URL}?part=snippet,statistics,contentDetails&chart=mostPopular&regionCode=KR&maxResults=20&key=${YOUTUBE_API_KEY}`;
         
         // 카테고리가 선택된 경우 videoCategoryId 추가
         if (currentCategory) {
             apiUrl += `&videoCategoryId=${currentCategory}`;
         }
+        
+        // 쇼츠 제외: videoDuration을 medium, long으로 제한 (4분 이상만)
+        // short는 4분 미만이므로 쇼츠(보통 60초 이하)가 제외됨
+        // 하지만 API에서 여러 값을 동시에 지정할 수 없으므로, 클라이언트 측에서 필터링
         
         // [MY_LOG] API URL 확인
         console.log('[MY_LOG] API 호출 URL:', apiUrl);
@@ -99,9 +103,17 @@ async function fetchTrendingVideos() {
         console.log('[MY_LOG] API 응답 받음:', data.items?.length || 0, '개 동영상');
         
         if (data.items && data.items.length > 0) {
-            displayVideos(data.items);
-            lastUpdate = new Date();
-            updateLastUpdateInfo();
+            // 쇼츠 콘텐츠 필터링 (60초 이하 동영상 제외)
+            const filteredVideos = filterShorts(data.items);
+            console.log('[MY_LOG] 쇼츠 제외 후:', filteredVideos.length, '개 동영상');
+            
+            if (filteredVideos.length > 0) {
+                displayVideos(filteredVideos);
+                lastUpdate = new Date();
+                updateLastUpdateInfo();
+            } else {
+                throw new Error('해당 카테고리의 인급동 동영상을 찾을 수 없습니다. (쇼츠 제외)');
+            }
         } else {
             throw new Error('인급동 동영상을 찾을 수 없습니다.');
         }
@@ -280,6 +292,48 @@ function closePlayer(videoId, thumbnailUrl) {
     if (closeBtn) {
         closeBtn.remove();
     }
+}
+
+// 쇼츠 콘텐츠 필터링 (60초 이하 동영상 제외)
+function filterShorts(videos) {
+    return videos.filter(video => {
+        const duration = video.contentDetails?.duration;
+        if (!duration) return true; // duration 정보가 없으면 포함
+        
+        // ISO 8601 duration 형식 파싱 (예: PT1M30S = 1분 30초)
+        const durationMatch = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+        if (!durationMatch) return true; // 파싱 실패 시 포함
+        
+        const hours = parseInt(durationMatch[1] || 0);
+        const minutes = parseInt(durationMatch[2] || 0);
+        const seconds = parseInt(durationMatch[3] || 0);
+        
+        const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+        
+        // 60초(1분) 이하는 쇼츠로 간주하여 제외
+        return totalSeconds > 60;
+    });
+}
+
+// 쇼츠 콘텐츠 필터링 (60초 이하 동영상 제외)
+function filterShorts(videos) {
+    return videos.filter(video => {
+        const duration = video.contentDetails?.duration;
+        if (!duration) return true; // duration 정보가 없으면 포함
+        
+        // ISO 8601 duration 형식 파싱 (예: PT1M30S = 1분 30초, PT60S = 60초)
+        const durationMatch = duration.match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);
+        if (!durationMatch) return true; // 파싱 실패 시 포함
+        
+        const hours = parseInt(durationMatch[1] || 0);
+        const minutes = parseInt(durationMatch[2] || 0);
+        const seconds = parseInt(durationMatch[3] || 0);
+        
+        const totalSeconds = hours * 3600 + minutes * 60 + seconds;
+        
+        // 60초(1분) 이하는 쇼츠로 간주하여 제외
+        return totalSeconds > 60;
+    });
 }
 
 // 조회수 포맷팅
